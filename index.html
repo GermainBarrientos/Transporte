@@ -1,0 +1,217 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<meta charset="utf-8">
+<title>ConsultasBD</title>
+<link href="js/jquery.mobile-1.0.min.css" rel="stylesheet" type="text/css"/>
+<script src="js/jquery-1.6.4.min.js" type="text/javascript"></script>
+<script src="js/jquery.mobile-1.0.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+$(function(){
+	document.addEventListener("deviceready", function(){
+		var boton=$("#guardar");
+		boton.tap(function(){
+			
+		var marc=$("#marca").val();
+		var mod=$("#modelo").val();
+		var col=$("#color").val();
+		var prec=$("#precio").val();
+		if(marc!="" && mod!="" && col!="" && prec!=""){
+		enviar(marc, mod, col, prec);
+		}else{
+		alert("Favor de registrar datos en los malditos campos");
+		}
+			});
+		
+			var btnconsulta=$("#consultar");
+			btnconsulta.tap(function(){
+				//alert("funciona");
+				$.ajax({
+					type:"POST",
+					url:"consulta.php",
+					data:" ",
+					success: consultando
+					});
+				});
+	},false);
+});
+function consultando(data){
+	
+	var registro=$.parseJSON(data);
+	var mostrar=$("#datos");
+	for(var i in registro){
+		mostrar.append(registro[i].id_auto+" "+registro[i].Marca+" "+registro[i].Modelo+" "+registro[i].Color+" "+registro[i].Precio+"</br>");
+		}	
+}
+
+function enviar(marc, mod, col, prec){
+	$.ajax({
+		type: "POST",
+		//url: "http://germainba.260mb.net/Registro/procesar.php",
+		url: "procesar.php",
+		data: "Marca="+marc+"&Modelo="+mod+"&Color="+col+"&Precio="+prec,
+		success: onSuccess
+		
+	}).done(function(msg){
+		if(msg==1){
+				
+		}else{
+			//navigator.notification.alert("Hubo un error en el registro",null,"Error","Aceptar");
+		}
+	});
+	function onSuccess(data)
+            {            
+			
+	    alert(data);
+            }
+}
+
+$(document).ready(function() {
+	
+	$('.boton').click(function(){
+		
+		$('audio')[0].play();
+	});
+});
+</script>
+
+<script type="text/javascript">
+$(function(){
+	$("#actualiza").click(function(){
+		var CoAc=$("#ColorAc").val();
+		var CoNu=$("#ColorNue").val();
+		$.ajax({
+			type:"GET",
+			url:"actualizar.php",
+			data:({ColorAct:CoAc,ColorNue:CoNu}),
+			cache:false,
+			dataType:"text",
+			success: exitosa
+		});
+	})
+	function exitosa(data){
+		alert(data);
+	}
+});
+</script>
+<script type="text/javascript">
+$(function(){
+	$("#elimina").click(function(){
+		var elimina=$("#ColoEl").val();
+		$.ajax({
+			type:"GET",
+			url:"eliminar.php",
+			data:({ColoEli:elimina}),
+			cache:false,
+			dataType:"text",
+			success: exitosa
+		 });
+	})
+		function exitosa(data){
+			alert(data)
+			}
+	});
+</script>
+</head> 
+<body> 
+
+<div data-role="page" id="page" data-theme="b">
+	<div data-role="header">
+		<h1><marquee align="bottom" scrollamount="40" behavior="alternate">Principal</marquee></h1>
+	</div>
+	<div data-role="content">	
+		<ul data-role="listview">
+			<li><a href="#page2">Capturar Registro</a></li>
+            <li><a href="#page3">Consultar Registro</a></li>
+            <li><a href="#page4">Modificar Registro</a></li>
+            <li><a href="#page5">Eliminar Registro</a></li>
+			
+		</ul>		
+	</div>
+	<div data-role="footer">
+		<p align="center" style="font-size:9px"> Copyright © 2014 | GermainBG.Inc &reg; </p>
+	</div>
+</div>
+
+<div data-role="page" id="page2" >
+	<div data-role="header" data-theme="b">
+		<h1>Captura de datos</h1>
+        <a href="#page" data-role="button" data-transition="pop">Volver </a>
+	</div>
+	<div data-role="content" data-theme="a">
+    <ul data-role="listview">
+            <li><input type="text" id="marca"  placeholder="Marca" autofocus /></li>
+            <li><input type="text" id="modelo"  placeholder="Modelo" /></li>
+            <li><input type="text" id="color"  placeholder="Color" /></li>       
+            <li><input type="text" id="precio"  placeholder="Precio" /></li>  
+           
+        </ul>			
+	</div>
+	<div data-role="footer" align="center" data-theme="b">
+		<a data-role="button" id="guardar" href="#" class="boton">Guardar</a>
+        <audio src="labd.mp3" preload>
+	<source src="labd.mp3" type="audio/mp3" />
+    	<source src="labd.ogg" type="audio/ogg" />
+
+Tu explorador no soporta audio en HTML5
+</audio>
+	</div>
+</div>
+
+<div data-role="page" id="page3" data-theme="b">
+	<div data-role="header">
+		<h1>Consultas</h1>
+        <a href="#page" data-role="button" data-transition="pop">Volver </a>
+	</div>
+	<div data-role="content" align="center">	
+		<a href="#" id="consultar" data-role="button"> Consultar </a>
+        <p>Datos: </p>
+        <div id="datos">
+        
+        </div>
+	</div>
+	<div data-role="footer">
+		<h4></h4>
+	</div>
+</div>
+
+
+<div data-role="page" id="page4" >
+	<div data-role="header" data-theme="b">
+		<h1>Modificar  datos</h1>
+        <a href="#page" data-role="button" data-transition="pop">Volver </a>
+	</div>
+	<div data-role="content" data-theme="a">
+    <ul data-role="listview">
+            <li><input type="text" id="ColorAc" name="ColorAc"  placeholder="Color Actual" autofocus required /></li>
+            <li><input type="text" id="ColorNue" name="ColorNue"  placeholder="Nuevo Color" required /></li>
+                     
+        </ul>			
+	</div>
+	<div data-role="footer" align="center" data-theme="b">
+		<a data-role="button" id="actualiza" href="#">Modificar</a>
+	</div>
+</div>
+
+<div data-role="page" id="page5" >
+	<div data-role="header" data-theme="b">
+		<h1>Eliminar Registro</h1>
+        <a href="#page" data-role="button" data-transition="pop">Volver </a>
+	</div>
+	<div data-role="content" data-theme="a">
+    <ul data-role="listview">
+    
+   <li><input type="text" id="ColoEl" name="ColoEl"  placeholder="Color del auto a eliminar" autofocus required /></li>
+         
+        </ul>			
+	</div>
+	<div data-role="footer" align="center" data-theme="b">
+		<a data-role="button" id="elimina" href="#">Eliminar</a>
+	</div>
+</div>
+
+
+
+</body>
+</html>
